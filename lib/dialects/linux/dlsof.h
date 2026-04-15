@@ -226,6 +226,18 @@ struct lsof_context_dialect {
     /* dnode.c - lock stream buffer */
     char *lock_stream_buf;
     size_t lock_stream_buf_sz;
+    /* dproc.c - /proc/FD/fd buffer */
+    char *fd_path_buf;
+    int fd_path_buf_sz;
+    /* dproc.c - /proc/FD/fdinfo buffer */
+    char *fdinfo_path_buf;
+    int fdinfo_path_buf_sz;
+    /* dproc.c - /proc/FD/fdinfo/%d buffer */
+    char *fdinfo_entry_path_buf;
+    int fdinfo_entry_path_buf_sz;
+    /* dproc.c - /proc/FD temp buffer */
+    char *temp_path_buf;
+    int temp_path_buf_sz;
 };
 
 /* Dialect-specific cleanup function */
@@ -249,5 +261,21 @@ void lsof_dialect_destroy(struct lsof_context *ctx);
 /* Lock stream buffer macros */
 #    define Vbuf (ctx->dialect.lock_stream_buf)
 #    define Vsz (ctx->dialect.lock_stream_buf_sz)
+
+/* /proc/FD/fd path buffer macros */
+#    define Dpath (ctx->dialect.fd_path_buf)
+#    define Dpathl (ctx->dialect.fd_path_buf_sz)
+
+/* /proc/FD/fdinfo path buffer macros */
+#    define Ipath (ctx->dialect.fdinfo_path_buf)
+#    define Ipathl (ctx->dialect.fdinfo_path_buf_sz)
+
+/* /proc/FD/fdinfo/%d path buffer macros */
+#    define Pathi (ctx->dialect.fdinfo_entry_path_buf)
+#    define Pathil (ctx->dialect.fdinfo_entry_path_buf_sz)
+
+/* /proc/FD temp path buffer macros */
+#    define Path (ctx->dialect.temp_path_buf)
+#    define Pathl (ctx->dialect.temp_path_buf_sz)
 
 #endif /* LINUX_LSOF_H	*/

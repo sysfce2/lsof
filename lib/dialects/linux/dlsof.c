@@ -91,4 +91,28 @@ void lsof_dialect_destroy(struct lsof_context *ctx) {
         CLEAN(Vbuf);
         Vsz = 0;
     }
+
+    /* Free /proc/FD/fd buffer */
+    if (Dpath) {
+        CLEAN(Dpath);
+        Dpathl = 0;
+    }
+
+    /* Free /proc/FD/fdinfo buffer */
+    if (Ipath) {
+        CLEAN(Ipath);
+        Ipathl = 0;
+    }
+
+    /* Free /proc/FD/fdinfo/%d buffer */
+    if (Pathi) {
+        CLEAN(Pathi);
+        Pathil = 0;
+    }
+
+    /* Free /proc/FD/ temp buffer */
+    if (Path) {
+        CLEAN(Path);
+        Pathl = 0;
+    }
 }

@@ -4077,7 +4077,8 @@ void process_proc_sock(struct lsof_context *ctx, /* context */
         Lf->type = LSOF_FILE_SOCKET;
         (void)snpf(Lf->iproto, sizeof(Lf->iproto), "%.*s", IPROTOL - 1, "SCTP");
         Lf->inp_ty = 2;
-        (void)snpf(tbuf, sizeof(tbuf), "%" INODEPSPEC "u", (INODETYPE)s->st_ino);
+        (void)snpf(tbuf, sizeof(tbuf), "%" INODEPSPEC "u",
+                   (INODETYPE)s->st_ino);
         tbuf[sizeof(tbuf) - 1] = '\0';
         enter_dev_ch(ctx, tbuf);
         Namech[0] = '\0';
