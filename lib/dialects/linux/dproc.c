@@ -208,22 +208,21 @@ static MALLOC_S alloc_cbf(struct lsof_context *ctx, /* context */
  */
 
 void gather_proc_info(struct lsof_context *ctx) {
-    char *cmd, *tcmd;
-    char cmdbuf[MAXPATHLEN];
+    char *cmd = NULL, *tcmd;
     struct dirent *dp;
     unsigned char ht, pidts;
     int n, nl, pgid, pid, ppid, prv, rv, tid, tpgid, tppid, tx;
-    static char *path = (char *)NULL;
-    static int pathl = 0;
-    static char *pidpath = (char *)NULL;
-    static MALLOC_S pidpathl = 0;
-    static MALLOC_S pidx = 0;
-    static DIR *ps = (DIR *)NULL;
+    char *path = (char *)NULL;
+    int pathl = 0;
+    char *pidpath = (char *)NULL;
+    MALLOC_S pidpathl = 0;
+    MALLOC_S pidx = 0;
+    DIR *ps = (DIR *)NULL;
     struct stat sb;
-    static char *taskpath = (char *)NULL;
-    static int taskpathl = 0;
-    static char *tidpath = (char *)NULL;
-    static int tidpathl = 0;
+    char *taskpath = (char *)NULL;
+    int taskpathl = 0;
+    char *tidpath = (char *)NULL;
+    int tidpathl = 0;
     DIR *ts;
     UID_ARG uid;
 
@@ -333,6 +332,9 @@ void gather_proc_info(struct lsof_context *ctx) {
          * Get the PID's command name.
          */
         (void)make_proc_path(ctx, pidpath, n, &path, &pathl, "stat");
+
+        /* Free previous cmd buffer */
+        CLEAN(cmd);
         if ((prv = read_id_stat(ctx, path, pid, &cmd, &ppid, &pgid)) < 0)
             cmd = NULL; /* NULL means failure to get command name */
 
@@ -346,16 +348,6 @@ void gather_proc_info(struct lsof_context *ctx) {
          * options work properly.
          */
         else if (!IgnTasks && (Selflags & SELTASK)) {
-            /*
-             * Copy cmd before next call to read_id_stat due to static
-             * variables
-             */
-            if (cmd) {
-                strncpy(cmdbuf, cmd, sizeof(cmdbuf) - 1);
-                cmdbuf[sizeof(cmdbuf) - 1] = '\0';
-                cmd = cmdbuf;
-            }
-
             (void)make_proc_path(ctx, pidpath, n, &taskpath, &taskpathl,
                                  "task");
             tx = n + 4;
@@ -434,6 +426,17 @@ void gather_proc_info(struct lsof_context *ctx) {
                 Lp->tid = 0;
             }
         }
+    }
+
+    /* cleanup buffers */
+    CLEAN(path);
+    CLEAN(pidpath);
+    CLEAN(taskpath);
+    CLEAN(tidpath);
+    CLEAN(cmd);
+    if (ps) {
+        closedir(ps);
+        ps = NULL;
     }
 }
 
@@ -1412,9 +1415,9 @@ process_proc_map(struct lsof_context *ctx, /* context */
         dev_t dev;
         INODETYPE inode;
     };
-    static struct saved_map *sm = (struct saved_map *)NULL;
+    struct saved_map *sm = (struct saved_map *)NULL;
     efsys_list_t *rep;
-    static int sma = 0;
+    int sma = 0;
     int diff_mntns = 0;
     /*
      * Open the /proc/<pid>/maps file, assign a page size buffer to its stream,
@@ -1644,6 +1647,7 @@ process_proc_map(struct lsof_context *ctx, /* context */
             link_lfile(ctx);
     }
     (void)fclose(ms);
+    CLEAN(sm);
 }
 
 /*
@@ -1664,8 +1668,8 @@ static int read_id_stat(struct lsof_context *ctx, /* context */
 {
     char buf[MAXPATHLEN], *cp, *cp1, **fp;
     int ch, cx, es, pc;
-    static char *cbf = (char *)NULL;
-    static MALLOC_S cbfa = 0;
+    char *cbf = (char *)NULL;
+    MALLOC_S cbfa = 0;
     FILE *fs;
     /*
      * Open the stat file path, assign a page size buffer to its stream,
@@ -1677,6 +1681,7 @@ static int read_id_stat(struct lsof_context *ctx, /* context */
 
     read_id_stat_exit:
 
+        CLEAN(cbf);
         (void)fclose(fs);
         return (-1);
     }
@@ -1703,13 +1708,6 @@ static int read_id_stat(struct lsof_context *ctx, /* context */
         goto read_id_stat_exit;
     cp++;
     pc = 1; /* start the parenthesis balance count at 1 */
-
-    /* empty process name to avoid leaking previous process name,
-     * see issue #246
-     */
-    if (cbf) {
-        cbf[0] = '\0';
-    }
 
     /*
      * Enter the command characters safely.  Supply them from the initial read
@@ -1747,6 +1745,7 @@ static int read_id_stat(struct lsof_context *ctx, /* context */
             es = 1; /* Switch to fgetc() when a '\0' appears. */
     }
     *cmd = cbf;
+    cbf = NULL;
     /*
      * Read the remainder of the stat line if it was necessary to read command
      * characters individually from the stat file.
