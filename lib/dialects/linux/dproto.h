@@ -60,7 +60,7 @@ extern int is_file_named(struct lsof_context *ctx, int ty, char *p,
 extern int make_proc_path(struct lsof_context *ctx, char *pp, int lp, char **np,
                           int *npl, char *sf);
 extern FILE *open_proc_stream(struct lsof_context *ctx, char *p, char *mode,
-                              char **buf, size_t *sz, int act);
+                              int act);
 extern void process_proc_node(struct lsof_context *ctx, char *p, char *pbr,
                               struct stat *s, int ss, struct stat *l, int ls);
 extern void process_proc_sock(struct lsof_context *ctx, char *p, char *pbr,

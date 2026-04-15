@@ -86,12 +86,6 @@ void lsof_dialect_destroy(struct lsof_context *ctx) {
         Fpa = 0;
     }
 
-    /* Free lock stream buffer */
-    if (Vbuf) {
-        CLEAN(Vbuf);
-        Vsz = 0;
-    }
-
     /* Free /proc/FD/fd buffer */
     if (Dpath) {
         CLEAN(Dpath);

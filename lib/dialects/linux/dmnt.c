@@ -158,8 +158,6 @@ getmntdev(struct lsof_context *ctx, /* context */
     static int err = 0;
     int h;
     mntsup_t *mp, *mpn;
-    static char *vbuf = (char *)NULL;
-    static size_t vsz = (size_t)0;
 
     if (err)
         return (0);
@@ -185,7 +183,7 @@ getmntdev(struct lsof_context *ctx, /* context */
             err = 1;
             return (0);
         }
-        if (!(fs = open_proc_stream(ctx, MntSupP, "r", &vbuf, &vsz, 0))) {
+        if (!(fs = open_proc_stream(ctx, MntSupP, "r", 0))) {
 
             /*
              * The mount supplement file can't be opened for reading.
@@ -390,8 +388,6 @@ struct mounts *readmnt(struct lsof_context *ctx) {
     int nfs;
     int mqueue;
     struct stat sb;
-    static char *vbuf = (char *)NULL;
-    static size_t vsz = (size_t)0;
 
     if (Lmi || Lmist)
         return (Lmi);
@@ -399,7 +395,7 @@ struct mounts *readmnt(struct lsof_context *ctx) {
      * Open access to /proc/mounts, assigning a page size buffer to its stream.
      */
     (void)snpf(buf, sizeof(buf), "%s/mounts", PROCFS);
-    ms = open_proc_stream(ctx, buf, "r", &vbuf, &vsz, 1);
+    ms = open_proc_stream(ctx, buf, "r", 1);
     /*
      * Read mount table entries.
      */

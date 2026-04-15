@@ -238,9 +238,6 @@ struct lsof_context_dialect {
     /* dnode.c - field parser state */
     char **field_ptrs;
     int field_ptrs_alloc;
-    /* dnode.c - lock stream buffer */
-    char *lock_stream_buf;
-    size_t lock_stream_buf_sz;
     /* dproc.c - /proc/FD/fd buffer */
     char *fd_path_buf;
     int fd_path_buf_sz;
@@ -276,10 +273,6 @@ void lsof_dialect_destroy(struct lsof_context *ctx);
 /* Field parser macros */
 #    define Fp (ctx->dialect.field_ptrs)
 #    define Fpa (ctx->dialect.field_ptrs_alloc)
-
-/* Lock stream buffer macros */
-#    define Vbuf (ctx->dialect.lock_stream_buf)
-#    define Vsz (ctx->dialect.lock_stream_buf_sz)
 
 /* /proc/FD/fd path buffer macros */
 #    define Dpath (ctx->dialect.fd_path_buf)

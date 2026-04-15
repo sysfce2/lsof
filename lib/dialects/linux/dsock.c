@@ -702,8 +702,6 @@ static void get_ax25(struct lsof_context *ctx,
     unsigned long rq, sq, state;
     MALLOC_S len;
     unsigned char rqs, sqs;
-    static char *vbuf = (char *)NULL;
-    static size_t vsz = (size_t)0;
     /*
      * Do second time cleanup or first time setup.
      */
@@ -734,7 +732,7 @@ static void get_ax25(struct lsof_context *ctx,
      * Open the /proc/net/ax25 file, assign a page size buffer to the stream,
      * and read it.  Store AX25 socket info in the AX25sin[] hash buckets.
      */
-    if (!(as = open_proc_stream(ctx, p, "r", &vbuf, &vsz, 0)))
+    if (!(as = open_proc_stream(ctx, p, "r", 0)))
         return;
     while (fgets(buf, sizeof(buf) - 1, as)) {
         if (get_fields(ctx, buf, (char *)NULL, &fp, (int *)NULL, 0) < 24)
@@ -1544,8 +1542,6 @@ static void get_icmp(struct lsof_context *ctx, /* context */
     INODETYPE inode;
     struct icmpin *np, *icmpp;
     MALLOC_S lal, ral;
-    static char *vbuf = (char *)NULL;
-    static size_t vsz = (size_t)0;
     FILE *xs;
     /*
      * Do second time cleanup or first time setup.
@@ -1571,7 +1567,7 @@ static void get_icmp(struct lsof_context *ctx, /* context */
      * Open the /proc/net/icmp file, assign a page size buffer to its stream,
      * and read the file.  Store icmp info in the Icmpin[] hash buckets.
      */
-    if (!(xs = open_proc_stream(ctx, p, "r", &vbuf, &vsz, 0)))
+    if (!(xs = open_proc_stream(ctx, p, "r", 0)))
         return;
     while (fgets(buf, sizeof(buf) - 1, xs)) {
         if (get_fields(ctx, buf, (char *)NULL, &fp, (int *)NULL, 0) < 11)
@@ -1673,8 +1669,6 @@ static void get_ipx(struct lsof_context *ctx, /* context */
     unsigned long rxq, state, txq;
     struct ipxsin *ip, *np;
     MALLOC_S len;
-    static char *vbuf = (char *)NULL;
-    static size_t vsz = (size_t)0;
     FILE *xs;
     /*
      * Do second time cleanup or first time setup.
@@ -1704,7 +1698,7 @@ static void get_ipx(struct lsof_context *ctx, /* context */
      * Open the /proc/net/ipx file, assign a page size buffer to the stream,
      * and read it.  Store IPX socket info in the Ipxsin[] hash buckets.
      */
-    if (!(xs = open_proc_stream(ctx, p, "r", &vbuf, &vsz, 0)))
+    if (!(xs = open_proc_stream(ctx, p, "r", 0)))
         return;
     while (fgets(buf, sizeof(buf) - 1, xs)) {
         if (get_fields(ctx, buf, (char *)NULL, &fp, (int *)NULL, 0) < 7)
@@ -1819,8 +1813,6 @@ static void get_netlink(struct lsof_context *ctx, /* context */
     int h, pr;
     INODETYPE inode;
     struct nlksin *np, *lp;
-    static char *vbuf = (char *)NULL;
-    static size_t vsz = (size_t)0;
     FILE *xs;
     /*
      * Do second time cleanup or first time setup.
@@ -1846,7 +1838,7 @@ static void get_netlink(struct lsof_context *ctx, /* context */
      * Open the /proc/net/netlink file, assign a page size buffer to its stream,
      * and read the file.  Store Netlink info in the Nlksin[] hash buckets.
      */
-    if (!(xs = open_proc_stream(ctx, p, "r", &vbuf, &vsz, 0)))
+    if (!(xs = open_proc_stream(ctx, p, "r", 0)))
         return;
     while (fgets(buf, sizeof(buf) - 1, xs)) {
         if (get_fields(ctx, buf, (char *)NULL, &fp, (int *)NULL, 0) < 10)
@@ -1913,8 +1905,6 @@ static void get_pack(struct lsof_context *ctx, /* context */
     INODETYPE inode;
     struct packin *np, *pp;
     unsigned long pr;
-    static char *vbuf = (char *)NULL;
-    static size_t vsz = (size_t)0;
     FILE *xs;
     /*
      * Do second time cleanup or first time setup.
@@ -1940,7 +1930,7 @@ static void get_pack(struct lsof_context *ctx, /* context */
      * Open the /proc/net/packet file, assign a page size buffer to its stream,
      * and read the file.  Store packet info in the Packin[] hash buckets.
      */
-    if (!(xs = open_proc_stream(ctx, p, "r", &vbuf, &vsz, 0)))
+    if (!(xs = open_proc_stream(ctx, p, "r", 0)))
         return;
     while (fgets(buf, sizeof(buf) - 1, xs)) {
         if (get_fields(ctx, buf, (char *)NULL, &fp, (int *)NULL, 0) < 9)
@@ -2012,8 +2002,6 @@ static void get_raw(struct lsof_context *ctx, /* context */
     int nf = 12;
     struct rawsin *np, *rp;
     MALLOC_S lal, ral, spl;
-    static char *vbuf = (char *)NULL;
-    static size_t vsz = (size_t)0;
     FILE *xs;
     /*
      * Do second time cleanup or first time setup.
@@ -2043,7 +2031,7 @@ static void get_raw(struct lsof_context *ctx, /* context */
      * Open the /proc/net/raw file, assign a page size buffer to its stream,
      * and read the file.  Store raw socket info in the Rawsin[] hash buckets.
      */
-    if (!(xs = open_proc_stream(ctx, p, "r", &vbuf, &vsz, 0)))
+    if (!(xs = open_proc_stream(ctx, p, "r", 0)))
         return;
     while (fgets(buf, sizeof(buf) - 1, xs)) {
         if (get_fields(ctx, buf, (char *)NULL, &fp, (int *)NULL, 0) < nf)
@@ -2150,8 +2138,6 @@ static void get_sctp(struct lsof_context *ctx) {
     MALLOC_S len, plen;
     struct sctpsin *sp, *np;
     FILE *ss;
-    static char *vbuf = (char *)NULL;
-    static size_t vsz = (size_t)0;
     /*
      * Do second time cleanup or first time setup.
      */
@@ -2189,7 +2175,7 @@ static void get_sctp(struct lsof_context *ctx) {
      * and read them.  Store SCTP socket info in the SCTPsin[] hash buckets.
      */
     for (i = 0; i < NSCTPPATHS; i++) {
-        if (!(ss = open_proc_stream(ctx, SCTPPath[i], "r", &vbuf, &vsz, 0)))
+        if (!(ss = open_proc_stream(ctx, SCTPPath[i], "r", 0)))
             continue;
         fl = 1;
         while (fgets(buf, sizeof(buf) - 1, ss)) {
@@ -2516,8 +2502,6 @@ static void get_tcpudp(struct lsof_context *ctx, /* context */
     int h, nf;
     INODETYPE inode;
     struct tcp_udp *np, *tp;
-    static char *vbuf = (char *)NULL;
-    static size_t vsz = (size_t)0;
 
 #if defined(HASEPTOPTS)
     pxinfo_t *pp, *pnp;
@@ -2598,7 +2582,7 @@ static void get_tcpudp(struct lsof_context *ctx, /* context */
      * Open the /proc/net file, assign a page size buffer to the stream, and
      * read it.
      */
-    if (!(fs = open_proc_stream(ctx, p, "r", &vbuf, &vsz, 0)))
+    if (!(fs = open_proc_stream(ctx, p, "r", 0)))
         return;
     nf = 12;
     while (fgets(buf, sizeof(buf) - 1, fs)) {
@@ -2719,8 +2703,6 @@ static void get_raw6(struct lsof_context *ctx, /* context */
     int nf = 12;
     struct rawsin *np, *rp;
     MALLOC_S lal, ral, spl;
-    static char *vbuf = (char *)NULL;
-    static size_t vsz = (size_t)0;
     FILE *xs;
     /*
      * Do second time cleanup or first time setup.
@@ -2752,7 +2734,7 @@ static void get_raw6(struct lsof_context *ctx, /* context */
      * Open the /proc/net/raw6 file, assign a page size buffer to the stream,
      * and read it.  Store raw6 socket info in the Rawsin6[] hash buckets.
      */
-    if (!(xs = open_proc_stream(ctx, p, "r", &vbuf, &vsz, 0)))
+    if (!(xs = open_proc_stream(ctx, p, "r", 0)))
         return;
     while (fgets(buf, sizeof(buf) - 1, xs)) {
         if (get_fields(ctx, buf, (char *)NULL, &fp, (int *)NULL, 0) < nf)
@@ -2865,8 +2847,6 @@ static void get_tcpudp6(struct lsof_context *ctx, /* context */
     int h, i, nf;
     INODETYPE inode;
     struct tcp_udp6 *np6, *tp6;
-    static char *vbuf = (char *)NULL;
-    static size_t vsz = (size_t)0;
 
 #    if defined(HASEPTOPTS)
     pxinfo_t *pp, *pnp;
@@ -2957,7 +2937,7 @@ static void get_tcpudp6(struct lsof_context *ctx, /* context */
      * Open the /proc/net file, assign a page size buffer to the stream,
      * and read it.
      */
-    if (!(fs = open_proc_stream(ctx, p, "r", &vbuf, &vsz, 0)))
+    if (!(fs = open_proc_stream(ctx, p, "r", 0)))
         return;
     nf = 12;
     while (fgets(buf, sizeof(buf) - 1, fs)) {
@@ -3076,8 +3056,6 @@ static void get_unix(struct lsof_context *ctx, /* context */
     uxsin_t *np, *up;
     FILE *us;
     uint32_t ty;
-    static char *vbuf = (char *)NULL;
-    static size_t vsz = (size_t)0;
 
 #if defined(HASEPTOPTS) && defined(HASUXSOCKEPT)
     pxinfo_t *pp, *pnp;
@@ -3119,7 +3097,7 @@ static void get_unix(struct lsof_context *ctx, /* context */
      * Open the /proc/net/unix file, assign a page size buffer to the stream,
      * read the file's contents, and add them to the Uxsin hash buckets.
      */
-    if (!(us = open_proc_stream(ctx, p, "r", &vbuf, &vsz, 0)))
+    if (!(us = open_proc_stream(ctx, p, "r", 0)))
         return;
     while (fgets(buf, sizeof(buf) - 1, us)) {
         if ((nf = get_fields(ctx, buf, ":", &fp, (int *)NULL, 0)) < 7)

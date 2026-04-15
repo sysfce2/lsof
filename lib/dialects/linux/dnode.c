@@ -560,7 +560,7 @@ void get_locks(struct lsof_context *ctx, /* context */
      * Open the /proc lock file, assign a page size buffer to its stream,
      * and read it.
      */
-    if (!(ls = open_proc_stream(ctx, p, "r", &Vbuf, &Vsz, 0)))
+    if (!(ls = open_proc_stream(ctx, p, "r", 0)))
         return;
     while (fgets(buf, sizeof(buf), ls)) {
         if (get_fields(ctx, buf, ":", &fp, (int *)NULL, 0) < 10)

@@ -819,20 +819,15 @@ static int nm2id(char *nm, /* pointer to name */
 
 FILE *open_proc_stream(struct lsof_context *ctx, /* context */
                        char *p,                  /* pointer to path to open */
-                       char *m,    /* pointer to mode -- e.g., "r" */
-                       char **buf, /* pointer tp setvbuf() address
-                                    * (NULL if none) */
-                       size_t *sz, /* setvbuf() size (0 if none or if
-                                    * getpagesize() desired */
-                       int act)    /* fopen() failure action:
-                                    *     0 : return (FILE *)NULL
-                                    *   <>0 : fprintf() an error message
-                                    *         and Error()
-                                    */
+                       char *m, /* pointer to mode -- e.g., "r" */
+                       int act) /* fopen() failure action:
+                                 *     0 : return (FILE *)NULL
+                                 *   <>0 : fprintf() an error message
+                                 *         and Error()
+                                 */
 {
-    FILE *fs;                      /* opened stream */
-    static size_t psz = (size_t)0; /* page size */
-    size_t tsz;                    /* temporary size */
+    FILE *fs;               /* opened stream */
+    size_t psz = (size_t)0; /* page size */
     /*
      * Open the stream.
      */
@@ -844,36 +839,15 @@ FILE *open_proc_stream(struct lsof_context *ctx, /* context */
         Error(ctx);
     }
     /*
-     * Return the stream if no buffer change is required.
-     */
-    if (!buf)
-        return (fs);
-    /*
      * Determine the buffer size required.
      */
-    if (!(tsz = *sz)) {
-        if (!psz)
-            psz = getpagesize();
-        tsz = psz;
-    }
+    psz = getpagesize();
     /*
-     * Allocate a buffer for the stream, as required.
+     * Setup stream buffering.
      */
-    if (!*buf) {
-        if (!(*buf = (char *)malloc((MALLOC_S)tsz))) {
-            (void)fprintf(stderr,
-                          "%s: can't allocate %d bytes for %s stream buffer\n",
-                          Pn, (int)tsz, p);
-            Error(ctx);
-        }
-        *sz = tsz;
-    }
-    /*
-     * Assign the buffer to the stream.
-     */
-    if (setvbuf(fs, *buf, _IOFBF, tsz)) {
+    if (setvbuf(fs, NULL, _IOFBF, psz)) {
         (void)fprintf(stderr, "%s: setvbuf(%s)=%d failure: %s\n", Pn, p,
-                      (int)tsz, strerror(errno));
+                      (int)psz, strerror(errno));
         Error(ctx);
     }
     return (fs);
@@ -1441,14 +1415,12 @@ process_proc_map(struct lsof_context *ctx, /* context */
     static struct saved_map *sm = (struct saved_map *)NULL;
     efsys_list_t *rep;
     static int sma = 0;
-    static char *vbuf = (char *)NULL;
-    static size_t vsz = (size_t)0;
     int diff_mntns = 0;
     /*
      * Open the /proc/<pid>/maps file, assign a page size buffer to its stream,
      * and read it/
      */
-    if (!(ms = open_proc_stream(ctx, p, "r", &vbuf, &vsz, 0)))
+    if (!(ms = open_proc_stream(ctx, p, "r", 0)))
         return;
 
     /* target process in a different mount namespace from lsof process. */
@@ -1695,13 +1667,11 @@ static int read_id_stat(struct lsof_context *ctx, /* context */
     static char *cbf = (char *)NULL;
     static MALLOC_S cbfa = 0;
     FILE *fs;
-    static char *vbuf = (char *)NULL;
-    static size_t vsz = (size_t)0;
     /*
      * Open the stat file path, assign a page size buffer to its stream,
      * and read the file's first line.
      */
-    if (!(fs = open_proc_stream(ctx, p, "r", &vbuf, &vsz, 0)))
+    if (!(fs = open_proc_stream(ctx, p, "r", 0)))
         return (-1);
     if (!(cp = fgets(buf, sizeof(buf), fs))) {
 
